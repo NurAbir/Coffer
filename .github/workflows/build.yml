@@ -46,6 +46,7 @@ jobs:
 
       # -- Publish portable single-file EXE ------------------------------------
       - name: Publish portable EXE
+        shell: pwsh
         run: |
           dotnet publish Coffer/Coffer.csproj `
             -c Release `
@@ -58,6 +59,16 @@ jobs:
             -p:DebugType=none `
             -p:DebugSymbols=false `
             --output publish
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          # Inno Setup consumes publish\Coffer.exe, but the release ships the
+          # portable app as dist\Coffer-Portable.exe. Stage it here so the
+          # checksum and artifact steps (and the release) can find it.
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item publish\Coffer.exe dist\Coffer-Portable.exe -Force
+          if (-not (Test-Path dist\Coffer-Portable.exe)) {
+            throw "dist\Coffer-Portable.exe was not created"
+          }
 
       # -- Inno Setup installer -------------------------------------------------
       - name: Install Inno Setup
