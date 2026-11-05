@@ -6,6 +6,11 @@ on:
     tags:     [ 'v*.*.*' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
+# Needed for the release step to create a GitHub Release on tag pushes.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -33,16 +38,16 @@ jobs:
 
       # -- Restore -------------------------------------------------------------
       - name: Restore dependencies
-        run: dotnet restore HeavenlyLock/HeavenlyLock.csproj
+        run: dotnet restore Coffer/Coffer.csproj
 
       # -- Build (validate) ----------------------------------------------------
       - name: Build
-        run: dotnet build HeavenlyLock/HeavenlyLock.csproj -c Release --no-restore
+        run: dotnet build Coffer/Coffer.csproj -c Release --no-restore
 
       # -- Publish portable single-file EXE ------------------------------------
       - name: Publish portable EXE
         run: |
-          dotnet publish HeavenlyLock/HeavenlyLock.csproj `
+          dotnet publish Coffer/Coffer.csproj `
             -c Release `
             -r win-x64 `
             --self-contained true `
@@ -61,17 +66,26 @@ jobs:
       - name: Build installer
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\HeavenlyLock.iss /Odist
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\Coffer.iss /Odist
+        shell: pwsh
+
+      # -- SHA-256 checksums ---------------------------------------------------
+      - name: Generate checksums
+        run: |
+          Get-FileHash dist\Coffer-Portable.exe, dist\Coffer-Setup.exe -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } |
+            Set-Content -Encoding ascii dist\SHA256SUMS.txt
         shell: pwsh
 
       # -- Upload build artifacts (every push) ---------------------------------
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: HeavenlyLock-${{ github.sha }}
+          name: Coffer-${{ github.sha }}
           path: |
-            dist/HeavenlyLock-Portable.exe
-            dist/HeavenlyLock-Setup.exe
+            dist/Coffer-Portable.exe
+            dist/Coffer-Setup.exe
+            dist/SHA256SUMS.txt
           retention-days: 14
 
       # -- Create GitHub Release (on tag push only) -----------------------------
@@ -79,22 +93,24 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          name: HeavenlyLock ${{ github.ref_name }}
+          name: Coffer ${{ github.ref_name }}
           draft: false
           prerelease: false
           files: |
-            dist/HeavenlyLock-Portable.exe
-            dist/HeavenlyLock-Setup.exe
+            dist/Coffer-Portable.exe
+            dist/Coffer-Setup.exe
+            dist/SHA256SUMS.txt
           body: |
-            ## HeavenlyLock ${{ github.ref_name }}
+            ## Coffer ${{ github.ref_name }}
 
             ### Downloads
             | File | Description |
             |---|---|
-            | `HeavenlyLock-Setup.exe` | Windows installer (recommended) |
-            | `HeavenlyLock-Portable.exe` | No install needed -- run from anywhere |
+            | `Coffer-Setup.exe` | Windows installer (recommended) |
+            | `Coffer-Portable.exe` | No install needed -- run from anywhere |
+            | `SHA256SUMS.txt` | SHA-256 checksums for both executables |
 
             ### What's changed
-            _Update this section before tagging a release._
+            See [CHANGELOG.md](https://github.com/NurAbir/Coffer/blob/main/CHANGELOG.md).
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,33 @@
+# Normalize line endings so the repository stays consistent across platforms.
+* text=auto
+
+# Source
+*.cs               text diff=csharp
+*.xaml             text
+*.csproj           text merge=union
+*.sln              text
+*.md               text
+*.yml              text
+*.yaml             text
+*.json             text
+*.iss              text
+*.ps1              text eol=crlf
+*.cmd              text eol=crlf
+*.bat              text eol=crlf
+*.sh               text eol=lf
+.gitignore         text
+.gitattributes     text
+
+# Binary
+*.png              binary
+*.ico              binary
+*.jpg              binary
+*.jpeg             binary
+*.gif              binary
+*.exe              binary
+*.dll              binary
+*.pdb              binary
+
+# Vault exports (never text-diff these)
+*.coffer           binary
+*.heavenly         binary

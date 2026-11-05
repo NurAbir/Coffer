@@ -1,0 +1,206 @@
+<UserControl x:Class="Coffer.Views.EntryEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ═══════════ Header ═══════════ -->
+        <Border Grid.Row="0"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="23,18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Width="46" Height="46"
+                        CornerRadius="12"
+                        Background="{StaticResource AccentSoftBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ServiceInitial}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource AccentBrush}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="14,0,14,0" VerticalAlignment="Center">
+                    <TextBlock Text="SERVICE" Style="{StaticResource FieldLabel}" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding Service, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             Padding="11,7"/>
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource IconButton}"
+                        Command="{Binding DeleteCommand}"
+                        Content="&#xE74D;"
+                        ToolTip="Delete this entry"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding DeleteCommand, Converter={StaticResource NullToVisibilityConverter}}"/>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════ Body ═══════════ -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="23,20,23,24">
+            <StackPanel>
+
+                <!-- Username -->
+                <StackPanel Margin="0,0,0,18">
+                    <TextBlock Text="Username or email" Style="{StaticResource FieldLabel}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Column="1"
+                                Style="{StaticResource IconButton}"
+                                Content="&#xE8C8;"
+                                ToolTip="Copy username"
+                                Command="{Binding CopyUsernameCommand}"
+                                Margin="8,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Password -->
+                <StackPanel Margin="0,0,0,18">
+                    <TextBlock Text="Password" Style="{StaticResource FieldLabel}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid>
+                            <PasswordBox x:Name="PasswordEntry"
+                                         PasswordChanged="PasswordEntry_PasswordChanged"/>
+                            <TextBox x:Name="PasswordText"
+                                     FontFamily="Consolas"
+                                     Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                            <Button Style="{StaticResource IconButton}"
+                                    Content="{Binding PasswordVisibilityGlyph}"
+                                    ToolTip="{Binding PasswordVisibilityText}"
+                                    Command="{Binding TogglePasswordVisibilityCommand}"/>
+                            <Button Style="{StaticResource IconButton}"
+                                    Content="&#xE72C;"
+                                    ToolTip="Generate a new password"
+                                    Command="{Binding GeneratePasswordCommand}"/>
+                            <Button Style="{StaticResource IconButton}"
+                                    Content="&#xE8C8;"
+                                    ToolTip="Copy password"
+                                    Command="{Binding CopyPasswordCommand}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,9,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ProgressBar Value="{Binding PasswordStrengthPercent, Mode=OneWay}"
+                                     Maximum="100"
+                                     VerticalAlignment="Center"
+                                     Foreground="{Binding PasswordStrengthText, Converter={StaticResource StrengthToColorConverter}}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding PasswordStrengthText}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Margin="10,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{Binding PasswordStrengthText, Converter={StaticResource StrengthToColorConverter}}"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Website -->
+                <StackPanel Margin="0,0,0,18">
+                    <TextBlock Text="Website" Style="{StaticResource FieldLabel}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                            <Button Style="{StaticResource IconButton}"
+                                    Content="&#xE8C8;"
+                                    ToolTip="Copy website address"
+                                    Command="{Binding CopyUrlCommand}"/>
+                            <Button Style="{StaticResource IconButton}"
+                                    Content="&#xE774;"
+                                    ToolTip="Open in browser"
+                                    Command="{Binding OpenUrlCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Tags -->
+                <StackPanel Margin="0,0,0,18">
+                    <TextBlock Text="Tags" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding TagsString, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="Separate multiple tags with commas"/>
+                    <TextBlock Text="Separate multiple tags with commas."
+                               Style="{StaticResource CaptionText}"
+                               Margin="2,6,0,0"/>
+                </StackPanel>
+
+                <!-- Notes -->
+                <StackPanel Margin="0,0,0,8">
+                    <TextBlock Text="Notes" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="96"
+                             VerticalContentAlignment="Top"
+                             VerticalScrollBarVisibility="Auto"/>
+                </StackPanel>
+
+                <!-- Footer -->
+                <Border Margin="0,18,0,0"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="0,1,0,0"
+                        Padding="0,14,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ModifiedAtText, StringFormat='Last changed {0}'}"
+                                       Style="{StaticResource CaptionText}"/>
+                            <TextBlock Text="{Binding CreatedAtText, StringFormat='Created {0}'}"
+                                       Style="{StaticResource CaptionText}"
+                                       Margin="0,3,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE72E;"
+                                       Style="{StaticResource IconText}"
+                                       FontSize="11"
+                                       Foreground="{StaticResource SuccessBrush}"
+                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="Encrypted with AES-256-GCM"
+                                       Style="{StaticResource CaptionText}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

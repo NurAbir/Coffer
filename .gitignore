@@ -75,6 +75,13 @@ installer/Output/
 Thumbs.db
 desktop.ini
 
+## ── Release artifacts kept beside the repo for manual upload ───────────────────
+/coffer*.zip
+/Coffer-Portable.exe
+/Coffer-Setup.exe
+/SHA256SUMS.txt
+
 ## ── Secrets / user data (never commit) ───────────────────────────────────────
 *.heavenly
+*.coffer
 lockout.json

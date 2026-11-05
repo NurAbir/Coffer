@@ -1,11 +1,11 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Builds HeavenlyLock - portable single-file EXE and Windows installer.
+    Builds Coffer - portable single-file EXE and Windows installer.
 
 .DESCRIPTION
-    1. Publishes a self-contained, single-file EXE  -> dist\HeavenlyLock-Portable.exe
-    2. Compiles the Inno Setup script               -> dist\HeavenlyLock-Setup.exe
+    1. Publishes a self-contained, single-file EXE  -> dist\Coffer-Portable.exe
+    2. Compiles the Inno Setup script               -> dist\Coffer-Setup.exe
 
 .PARAMETER Configuration
     Build configuration. Default: Release
@@ -26,11 +26,11 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$ProjectFile  = "$PSScriptRoot\HeavenlyLock\HeavenlyLock.csproj"
+$ProjectFile  = "$PSScriptRoot\Coffer\Coffer.csproj"
 $DistDir      = "$PSScriptRoot\dist"
 $PublishDir   = "$PSScriptRoot\publish"
-$IssScript    = "$PSScriptRoot\installer\HeavenlyLock.iss"
-$PortableName = "HeavenlyLock-Portable.exe"
+$IssScript    = "$PSScriptRoot\installer\Coffer.iss"
+$PortableName = "Coffer-Portable.exe"
 
 function Write-Step([string]$msg) {
     Write-Host ""
@@ -84,7 +84,7 @@ dotnet publish $ProjectFile `
 
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$builtExe = Join-Path $PublishDir "HeavenlyLock.exe"
+$builtExe = Join-Path $PublishDir "Coffer.exe"
 if (-not (Test-Path $builtExe)) {
     Write-Host "ERROR: EXE not found after publish: $builtExe" -ForegroundColor Red
     exit 1
@@ -133,9 +133,9 @@ if ($SkipInstaller) {
         & $iscc $IssScript "/O$DistDir"
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-        $installerPath = Join-Path $DistDir "HeavenlyLock-Setup.exe"
+        $installerPath = Join-Path $DistDir "Coffer-Setup.exe"
         $instMB = [math]::Round((Get-Item $installerPath).Length / 1MB, 1)
-        Write-Host "  OK  dist\HeavenlyLock-Setup.exe  [$instMB MB]" -ForegroundColor Green
+        Write-Host "  OK  dist\Coffer-Setup.exe  [$instMB MB]" -ForegroundColor Green
     }
 }
 

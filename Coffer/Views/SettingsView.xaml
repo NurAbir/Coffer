@@ -1,0 +1,144 @@
+<UserControl x:Class="Coffer.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel MaxWidth="760" HorizontalAlignment="Stretch">
+
+            <!-- ═══════════ Master password ═══════════ -->
+            <Border Style="{StaticResource Card}" Padding="24,22">
+                <StackPanel>
+                    <TextBlock Text="Master password" Style="{StaticResource SectionTitleText}"/>
+                    <TextBlock Text="Change the password that unlocks Coffer. Your entries are re-encrypted with a fresh key; your recovery phrase is not affected."
+                               Style="{StaticResource MutedText}"
+                               Margin="0,4,0,18"/>
+
+                    <TextBlock Text="Current master password" Style="{StaticResource FieldLabel}"/>
+                    <PasswordBox x:Name="CurrentPasswordBox"
+                                 MaxWidth="380"
+                                 HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="New master password" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                    <PasswordBox x:Name="NewPasswordBox"
+                                 MaxWidth="380"
+                                 HorizontalAlignment="Left"/>
+
+                    <TextBlock Text="Confirm new password" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                    <PasswordBox x:Name="ConfirmPasswordBox"
+                                 MaxWidth="380"
+                                 HorizontalAlignment="Left"/>
+
+                    <Button Content="Change master password"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left"
+                            Margin="0,18,0,0"
+                            Click="ChangePassword_Click"/>
+
+                    <TextBlock Text="{Binding PasswordChangeMessage}"
+                               Margin="0,12,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource SettingsStatusText}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PasswordChangeMessage}" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════ Auto-lock ═══════════ -->
+            <Border Style="{StaticResource Card}" Padding="24,22" Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Auto-lock" Style="{StaticResource SectionTitleText}"/>
+                    <TextBlock Text="Lock the vault automatically after a period without activity. You will need your master password to return."
+                               Style="{StaticResource MutedText}"
+                               Margin="0,4,0,16"/>
+                    <ListBox Style="{StaticResource PillListBox}"
+                             ItemContainerStyle="{StaticResource PillItemStyle}"
+                             ItemsSource="{Binding AutoLockOptions}"
+                             SelectedItem="{Binding SelectedAutoLock}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════ Backups & data ═══════════ -->
+            <Border Style="{StaticResource Card}" Padding="24,22" Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Backups &amp; data" Style="{StaticResource SectionTitleText}"/>
+                    <TextBlock Text="Coffer keeps your vault on this device only. Save an encrypted backup somewhere safe, such as an external drive."
+                               Style="{StaticResource MutedText}"
+                               Margin="0,4,0,14"/>
+
+                    <TextBlock Text="Vault location" Style="{StaticResource FieldLabel}"/>
+                    <Border Background="{StaticResource FieldBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,9">
+                        <TextBlock Text="{Binding VaultPath}"
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="Save encrypted backup"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding BackupVaultCommand}"
+                                Margin="0,0,10,0"/>
+                        <Button Content="Open data folder"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding OpenDataFolderCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════ Delete vault ═══════════ -->
+            <Border Style="{StaticResource Card}"
+                    Padding="24,22"
+                    Margin="0,18,0,0"
+                    BorderBrush="#3A2626">
+                <StackPanel>
+                    <TextBlock Text="Delete vault"
+                               Style="{StaticResource SectionTitleText}"
+                               Foreground="{StaticResource DangerBrush}"/>
+                    <TextBlock Text="Permanently remove your vault and every saved password from this computer. This cannot be undone, so make a backup first."
+                               Style="{StaticResource MutedText}"
+                               Margin="0,4,0,16"/>
+                    <Button Content="Delete vault..."
+                            Style="{StaticResource DangerButton}"
+                            HorizontalAlignment="Left"
+                            Command="{Binding RequestDeleteVaultCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════ About ═══════════ -->
+            <Border Style="{StaticResource Card}" Padding="24,22" Margin="0,18,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <ContentControl Width="38" Height="38" Style="{StaticResource BrandMark}"/>
+                        <StackPanel Margin="13,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Coffer"
+                                       FontSize="17"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Text="Version 1.1.0" Style="{StaticResource CaptionText}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock Text="A fully offline password vault for Windows 10 and 11. AES-256-GCM encryption with Argon2id key derivation. No accounts, no cloud, and no telemetry."
+                               Style="{StaticResource MutedText}"
+                               LineHeight="20"
+                               Margin="0,16,0,0"/>
+
+                    <TextBlock Text="© 2026 Coffer"
+                               Style="{StaticResource CaptionText}"
+                               Margin="0,14,0,0"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
